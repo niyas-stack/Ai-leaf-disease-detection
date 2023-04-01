@@ -1,24 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# #### importing library
-
-# In[ ]:
-
-
-get_ipython().system('pip install torchsummary')
-
-
-# In[ ]:
-
-
-get_ipython().system('pip install opencv-python')
-
-
-# In[2]:
-
-
-#
+import
 import numpy as np
 import matplotlib.pyplot as plt
 import torch,torchvision
@@ -31,22 +11,8 @@ import os
 from PIL import Image
 import pandas as pd
 import seaborn as sns
-
-
-# In[3]:
-
-
 import torch.nn.functional as F
 
-
-# In[4]:
-
-
-device='cuda' if torch.cuda.is_available() else "cpu"  
-device
-
-
-# In[5]:
 
 
 #pre processing
@@ -61,52 +27,11 @@ transform=transforms.Compose([
 ])
 
 
-# ## data loading
-
-# In[6]:
-
-
-train_data=torchvision.datasets.ImageFolder("C:\\Users\\NOUFAL\\OneDrive\\Documents\\PROJECT\\data_split\\train",transform=transform)
-test_data=torchvision.datasets.ImageFolder("C:\\Users\\NOUFAL\\OneDrive\\Documents\\PROJECT\\data_split\\test",transform=transform)
-val_data=torchvision.datasets.ImageFolder("C:\\Users\\NOUFAL\\OneDrive\\Documents\\PROJECT\\data_split\\val",transform=transform)
-
-
-# In[7]:
-
-
-print(len(train_data))
-print(len(test_data))
-print(len(val_data))
-
-
-# ## batch size
-
-# In[8]:
-
-
 batch_size=64
 epochs=100
 num_classes=16
 
 
-# In[9]:
-
-
-trainloader=torch.utils.data.DataLoader(train_data,batch_size=batch_size,shuffle=True)
-testloader=torch.utils.data.DataLoader(test_data,batch_size=batch_size,shuffle=True)
-valloader=torch.utils.data.DataLoader(val_data,batch_size=batch_size,shuffle=True)
-
-
-# In[10]:
-
-
-classes=train_data.class_to_idx
-
-
-# In[11]:
-
-
-classes
 
 
 # ## model creation

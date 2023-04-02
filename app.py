@@ -12,8 +12,8 @@ from werkzeug.utils import secure_filename
 
 # load the model from the file path
 model = torch.load("epoch-81.pt", map_location=torch.device('cpu'))
-model.eval()
-
+model['model'].eval()
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
                 1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 
@@ -47,6 +47,7 @@ def model_predict(img_path, model_func, transform):
     image = Image.open(img_path)
     image_tensor = transform(image).float()
     image_tensor = image_tensor.unsqueeze(0)
+    image_tensor = image_tensor.to(device)
     output = model_func(image_tensor)
     index = torch.argmax(output)
     pred = classes[index.item()]
@@ -59,12 +60,14 @@ def main():
     st.write("Upload an image of a plant leaf and the app will predict whether it has a disease or not.")
     file = st.file_uploader("Upload image", type=["jpg", "jpeg", "png"])
     if file is not None:
-        image = Image.open(file)
-        st.image(image, caption='Uploaded Image.', use_column_width=True)
+        filename = secure_filename(file.name)
+        with open(os.path.join("tempDir", filename), "wb") as f:
+            f.write(file.getbuffer())
+        st.image(file, caption='Uploaded Image.', use_column_width=True)
         st.write("")
         st.write("Classifying...")
-        label = model_predict(file, model, transform)
-        st.write(label)
+        prediction = model_predict(os.path.join("tempDir", filename), model['model'], transform)
+        st.success(prediction)
 
 if __name__ == '__main__':
     main()

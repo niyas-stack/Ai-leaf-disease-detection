@@ -10,12 +10,9 @@ from PIL import Image
 import streamlit as st
 from werkzeug.utils import secure_filename
 
-#checking for the device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(device)
-
-model_path = "C:\\Users\\user\\Documents\\project\\resnet_epoch\\epoch-81.pt"
-model.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))
+# load the model from the file path
+model = torch.load("epoch-81.pt")
+model.to(device)
 model.eval()
 
 classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
@@ -37,14 +34,14 @@ classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ',
 
 #image transformation
 transform=transforms.Compose([
-transforms.ToTensor(),
+    transforms.ToTensor(),
     transforms.Resize((224,224)),
     transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1, hue=0.1),
     transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
-    ])
+])
 
 def model_predict(img_path, model_func, transform):
     image = Image.open(img_path)
@@ -53,10 +50,8 @@ def model_predict(img_path, model_func, transform):
     image_tensor = image_tensor.to(device)
     output = model_func(image_tensor)
     index = torch.argmax(output)
-    print(index)
     pred = classes[index.item()]
     probs, _ = torch.max(F.softmax(output, dim=1), 1)
-    print(probs)
     return pred
 
 def main():
@@ -65,13 +60,7 @@ def main():
     st.write("Upload an image of a plant leaf and the app will predict whether it has a disease or not.")
     file = st.file_uploader("Upload image", type=["jpg", "jpeg", "png"])
     if file is not None:
-        image = Image.open(file)
-        st.image(image, caption='Uploaded Image.', use_column_width=True)
-        pred_button = st.button("Predict")
-        if pred_button:
-            with st.spinner('Predicting...'):
-                preds = model_predict(img_path=file, model_func=model, transform=transform)
-            st.success(preds)
+        filename
 
 if __name__ == '__main__':
     main()

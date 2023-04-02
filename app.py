@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 # load the model from the file path
 model = torch.load("epoch-81.pt")
 model.to(device)
-model.eval()
+
 
 classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
                 1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 

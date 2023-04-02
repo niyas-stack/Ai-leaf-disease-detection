@@ -11,9 +11,13 @@ import streamlit as st
 from werkzeug.utils import secure_filename
 
 # load the model from the file path
-model = torch.load("epoch-81.pt", map_location=torch.device('cpu'))
-model['model'].eval()
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model_state_dict = torch.load("epoch-81.pt")
+model = torchvision.models.resnet18(pretrained=False)
+num_ftrs = model.fc.in_features
+model.fc = torch.nn.Linear(num_ftrs, 16)
+model.load_state_dict(model_state_dict)
+model.to(device)
+
 
 classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
                 1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 
@@ -61,13 +65,12 @@ def main():
     file = st.file_uploader("Upload image", type=["jpg", "jpeg", "png"])
     if file is not None:
         filename = secure_filename(file.name)
-        with open(os.path.join("tempDir", filename), "wb") as f:
-            f.write(file.getbuffer())
-        st.image(file, caption='Uploaded Image.', use_column_width=True)
-        st.write("")
-        st.write("Classifying...")
-        prediction = model_predict(os.path.join("tempDir", filename), model['model'], transform)
-        st.success(prediction)
+        with open(os.path.join("./uploads", filename), "wb") as f:
+            f.write(file.read())
+            st.write("Saved file:", filename)
+        img_path = os.path.join("./uploads", filename)
+        prediction = model_predict(img_path, model, transform)
+        st.write(prediction)
 
 if __name__ == '__main__':
     main()

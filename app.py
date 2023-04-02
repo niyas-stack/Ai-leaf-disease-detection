@@ -10,7 +10,7 @@ from PIL import Image
 import streamlit as st
 
 # Load the model
-model_path = "resnet_epoch/epoch-81.pt"
+model_path = "epoch-81.pt"
 model = torch.load(model_path, map_location=torch.device('cpu'))
 model.eval()
 

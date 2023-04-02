@@ -11,7 +11,7 @@ import streamlit as st
 from werkzeug.utils import secure_filename
 
 # load the model from the file path
-model = torch.load("epoch-81.pt")
+model = torch.load("epoch-81.pt", map_location=torch.device('cpu'))
 model.to(device)
 model.eval()
 

@@ -6,7 +6,6 @@ import PIL
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn.functional as F
-from Plant_Disease_Detection import model, train_data
 from PIL import Image
 import streamlit as st
 from werkzeug.utils import secure_filename

@@ -11,9 +11,11 @@ import streamlit as st
 from werkzeug.utils import secure_filename
 
 # load the model from the file path
-model = torch.load("epoch-81.pt", map_location=torch.device('cpu'))
+model_dict = torch.load("epoch-81.pt", map_location=torch.device('cpu'))
+model.load_state_dict(model_dict)
 model.to(device)
 model.eval()
+
 
 classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
                 1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 

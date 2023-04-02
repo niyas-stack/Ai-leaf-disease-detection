@@ -10,10 +10,16 @@ from PIL import Image
 import streamlit as st
 from werkzeug.utils import secure_filename
 
-# load the model from the file path
-model = torch.load("epoch-81.pt")
-model.to(device)
+# check if a GPU is available, else use the CPU
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+# load the model from the file path
+try:
+    model = torch.load("epoch-81.pt", map_location=device)
+    model.eval()
+except RuntimeError:
+    st.error("Failed to load the model. Please check if the model file is available and try again.")
+    st.stop()
 
 classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
                 1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 
@@ -32,7 +38,7 @@ classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ',
                 14:'The above leaf is bean healthy', 
                 15:'The above leaf is bean rust'})
 
-#image transformation
+# image transformation
 transform=transforms.Compose([
     transforms.ToTensor(),
     transforms.Resize((224,224)),
@@ -60,7 +66,13 @@ def main():
     st.write("Upload an image of a plant leaf and the app will predict whether it has a disease or not.")
     file = st.file_uploader("Upload image", type=["jpg", "jpeg", "png"])
     if file is not None:
-        filename
-
+        filename = secure_filename(file.name)
+        with open(os.path.join("./tempDir", filename), "wb") as f:
+            f.write(file.getbuffer())
+        img_path = os.path.join("./tempDir", filename)
+        st.image(img_path, use_column_width=True)
+        pred = model_predict(img_path, model, transform)
+        st.success(pred)
+       
 if __name__ == '__main__':
     main()

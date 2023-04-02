@@ -12,7 +12,6 @@ import streamlit as st
 # Import the model
 model_path = "epoch-81.pt"
 model = torch.load(model_path, map_location=torch.device('cpu'))
-model.eval()
 
 # Define the classes
 classes = {

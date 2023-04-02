@@ -1,40 +1,40 @@
 import os
 import numpy as np
-
 import torch
 import PIL
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn.functional as F
 from PIL import Image
-import streamlit as st
 from werkzeug.utils import secure_filename
+import streamlit as st
 
-# load the model from the file path
-model_dict = torch.load("epoch-81.pt", map_location=torch.device('cpu'))
-model.load_state_dict(model_dict)
-model.to(device)
+# Import the model
+model_path = "epoch-81.pt"
+model = torch.load(model_path, map_location=torch.device('cpu'))
 model.eval()
 
+# Define the classes
+classes = {
+    0:'The above leaf is Cassava (Cassava Mosaic)',
+    1:'The above leaf is Cassava CB (Cassava Bacterial Blight)',
+    2:'The above leaf is Cassava Healthy leaf',
+    3:'The above leaf is Tomato Bacterial spot',
+    4:'The above leaf is Tomato early blight',
+    5:'The above leaf is Tomato Late blight',
+    6:'The above leaf is Tomato Leaf Mold',
+    7:'The above leaf is Tomato Septoria leaf spot',
+    8:'The above leaf is Tomato Spider mites Two-spotted spider mite',
+    9:'The above leaf is Tomato Target Spot',
+    10:'The above leaf is Tomato Yellow Leaf Curl Virus',
+    11:'The above leaf is Tomato mosaic virus',
+    12:'The above leaf is Tomato healthy',
+    13:'The above leaf is bean angular leaf spot',
+    14:'The above leaf is bean healthy',
+    15:'The above leaf is bean rust'
+}
 
-classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
-                1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 
-                2:'The above leaf is Cassava Healthy leaf', 
-                3:'The above leaf is Tomato Bacterial spot', 
-                4:'The above leaf is Tomato early blight',
-                5:'The above leaf is Tomato Late blight',
-                6:'The above leaf is Tomato Leaf Mold', 
-                7:'The above leaf is Tomato Septoria leaf spot',
-                8:'The above leaf is Tomato Spider mites Two-spotted spider mite', 
-                9:'The above leaf is Tomato Target Spot',
-                10:'The above leaf is Tomato Yellow Leaf Curl Virus', 
-                11:'The above leaf is Tomato mosaic virus', 
-                12:' The above leaf is Tomato healthy', 
-                13:'The above leaf is bean angular leaf spot',
-                14:'The above leaf is bean healthy', 
-                15:'The above leaf is bean rust'})
-
-#image transformation
+# Define the image transformation
 transform=transforms.Compose([
     transforms.ToTensor(),
     transforms.Resize((224,224)),
@@ -46,23 +46,33 @@ transform=transforms.Compose([
 ])
 
 def model_predict(img_path, model_func, transform):
-    image = Image.open(img_path)
-    image_tensor = transform(image).float()
-    image_tensor = image_tensor.unsqueeze(0)
-    image_tensor = image_tensor.to(device)
-    output = model_func(image_tensor)
-    index = torch.argmax(output)
-    pred = classes[index.item()]
+    image=Image.open(img_path)
+    image_tensor=transform(image).float()
+    image_tensor=image_tensor.unsqueeze(0)
+    output=model_func(image_tensor)
+    index=torch.argmax(output)
+    pred=classes[index.item()]
     probs, _ = torch.max(F.softmax(output, dim=1), 1)
     return pred
 
 def main():
-    st.set_page_config(page_title="Plant Disease Detection App")
     st.title("Plant Disease Detection App")
-    st.write("Upload an image of a plant leaf and the app will predict whether it has a disease or not.")
-    file = st.file_uploader("Upload image", type=["jpg", "jpeg", "png"])
-    if file is not None:
-        filename
+    st.text("Upload a picture of a plant leaf and get a prediction")
 
-if __name__ == '__main__':
+    # Upload image
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+    if uploaded_file is not None:
+        # Save image
+        with open(os.path.join("uploads", uploaded_file.name), "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        img_path = os.path.join("uploads", uploaded_file.name)
+
+        # Make prediction
+        prediction = model_predict(img_path=img_path, model_func=model, transform=transform)
+
+        # Show result
+        st.image(uploaded_file, caption=prediction, use_column_width=True)
+
+if __name__ == "__main__":
     main()

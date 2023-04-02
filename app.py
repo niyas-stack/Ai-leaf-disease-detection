@@ -12,7 +12,6 @@ import streamlit as st
 # Load the model
 model_path = "epoch-81.pt"
 model = torch.load(model_path, map_location=torch.device('cpu'))
-model.eval()
 
 classes = {
     0: 'The above leaf is Cassava (Cassava Mosaic)',

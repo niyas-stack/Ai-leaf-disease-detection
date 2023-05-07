@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from torchsummary import summary
+
 import torch
 import PIL
 import torchvision
@@ -10,6 +10,7 @@ from PIL import Image
 import streamlit as st
 
 # Load the model
+model_path = "epoch-81.pt"
 model = torchvision.models.resnet18(pretrained=True)
 classes = {
     0: 'The above leaf is Cassava (Cassava Mosaic)',
@@ -31,20 +32,18 @@ classes = {
 }
 num_ftrs = model.fc.in_features
 model.fc = torch.nn.Linear(num_ftrs, len(classes))
-model_path = "epoch-90.pt"
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
-summary(model,input_size=(3,224,224))
 model.eval()
 
-#pre processing
-transform=transforms.Compose([
+# Image transformation
+transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Resize((224,224)),
-     transforms.RandomAffine(degrees=(25)),
-     transforms.RandomRotation(25),
-     transforms.RandomHorizontalFlip(0.5),
-     transforms.RandomVerticalFlip(0.5),
-     transforms.Normalize((0.5,0.5,0.5),(1,1,1))
+    transforms.Resize((224, 224)),
+    transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1, hue=0.1),
+    transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
+    transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
 ])
 
 def model_predict(image, model_func, transform):
@@ -54,24 +53,19 @@ def model_predict(image, model_func, transform):
     index = torch.argmax(output)
     pred = classes[index.item()]
     probs, _ = torch.max(F.softmax(output, dim=1), 1)
-    if probs < 0.93:
-        return "not defined",probs
-    else:
-        return pred, probs
-
+    return pred, probs
 
 def main():
-    st.set_page_config(page_title="AI Leaf Disease Detection", page_icon=":leaves:")
     st.title("AI Leaf Disease Detection")
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, caption='Uploaded Image', width=300)
+        st.image(image, caption='Uploaded Image', use_column_width=True)
         st.write("")
-        if st.button("Classify", key="classify_btn"):
-            pred, probs = model_predict(image, model, transform)
-            st.write(f"Prediction: {pred}")
-            st.write(f"Probability: {probs.item()}")
+        st.write("Classifying...")
+        pred, probs = model_predict(image, model, transform)
+        st.write(f"Prediction: {pred}")
+        st.write(f"Probability: {probs.item()}")
 
 if __name__ == "__main__":
     main()

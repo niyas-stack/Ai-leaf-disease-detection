@@ -155,18 +155,14 @@ def main():
         st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
 
-    if st.session_state['pred'] is not None:
-        selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
-        st.session_state['selected_language'] = selected_language
+        if st.session_state['pred'] != "not defined":
+            selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
+            st.session_state['selected_language'] = selected_language
 
-    if st.session_state['pred'] is not None:
-        if st.session_state['selected_language'] == 'Malayalam':
-            display_remedies_malayalam(st.session_state['pred'])
-        else:
-            display_remedies(st.session_state['pred'])
+            if st.session_state['selected_language'] == 'Malayalam':
+                display_remedies_malayalam(st.session_state['pred'])
+            else:
+                display_remedies(st.session_state['pred'])
 
 if __name__ == "__main__":
     main()
-
-        
-        

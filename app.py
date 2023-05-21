@@ -46,7 +46,7 @@ selected_language = 'English'  # Set the default language
 
 num_ftrs = model.fc.in_features
 model.fc = torch.nn.Linear(num_ftrs, len(classes))
-model_path = "epoch-90.pt"
+model_path = "epoch-8.pt"
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 summary(model, input_size=(3, 224, 224))
 model.eval()
@@ -72,7 +72,7 @@ def model_predict(img_path,model_func,transform):
     pred=classes[index.item()]
     probs, _ = torch.max(F.softmax(output, dim=1), 1)
     if probs < 0.93:
-        return "not defined", probs
+        return "This is not trained yet ", probs
     else:
         return pred, probs
 
@@ -157,7 +157,7 @@ def main():
         st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
 
-        if st.session_state['pred'] != "not defined":
+        if st.session_state['pred'] != "This is not trained yet":
             selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
             st.session_state['selected_language'] = selected_language
 

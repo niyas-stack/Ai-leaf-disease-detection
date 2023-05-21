@@ -148,18 +148,12 @@ def main():
         st.image(image, caption='Uploaded Image', width=300)
         st.write("")
 
-        classify_button_clicked = st.button("Classify", key="classify_btn")
-
-        if classify_button_clicked:
+        if st.button("Classify", key="classify_btn"):
             pred, probs = model_predict(image, model, transform)
             st.session_state.session_state['pred'] = pred
             st.session_state.session_state['probs'] = probs.item()
             st.session_state.session_state['language_selected'] = False
 
-        if st.session_state.session_state['pred'] is not None:
-            with st.beta_expander("Classification Result"):
-                st.markdown(f"<p style='color: white;'>Prediction: {st.session_state.session_state['pred']}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color: white;'>Probability: {st.session_state.session_state['probs']}</p>", unsafe_allow_html=True)
     if st.session_state.session_state['pred'] is not None:
       st.markdown(f"<p style='color: white;'>Prediction: {st.session_state.session_state['pred']}</p>", unsafe_allow_html=True)
       st.markdown(f"<p style='color: white;'>Probability: {st.session_state.session_state['probs']}</p>", unsafe_allow_html=True)

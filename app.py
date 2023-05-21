@@ -155,4 +155,4 @@ def main():
          display_remedies(st.session_state.session_state['pred'])
 
 if __name__ == "__main__":
-    main()
+   main()

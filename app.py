@@ -126,7 +126,7 @@ def init_session_state():
 def main():
     init_session_state()
 
-    st.set_page_config(page_title="AI Leaf Disease Detection", page_icon=":leaves:")
+    st.set_page_config(page_title="Dr.Leaf", page_icon="logo.png")
     st.markdown("<h1 style='color: green;'>AI Leaf Disease Detection</h1>", unsafe_allow_html=True)
     add_bg_from_local('background app2a.jpg')
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])

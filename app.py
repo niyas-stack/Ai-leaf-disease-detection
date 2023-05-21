@@ -148,7 +148,7 @@ def main():
         st.image(image, caption='Uploaded Image', width=300)
         st.write("")
 
-       classify_button_clicked = st.button("Classify", key="classify_btn")
+        classify_button_clicked = st.button("Classify", key="classify_btn")
 
         if classify_button_clicked:
             pred, probs = model_predict(image, model, transform)

@@ -127,15 +127,7 @@ def main():
     init_session_state()
 
     st.set_page_config(page_title="Dr.Leaf", page_icon="logo.png")
-    header_container = st.beta_container()
-    header_columns = header_container.beta_columns([1, 8])
-
-    with header_columns[0]:
-      st.image('logo.png', width=80)
-
-    with header_columns[1]:
-      st.title('Dr.Leaf')
-
+    st.markdown("<h1 style='color: green;'>AI Leaf Disease Detection</h1>", unsafe_allow_html=True)
     add_bg_from_local('background app2a.jpg')
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
@@ -153,8 +145,8 @@ def main():
             st.session_state['language_selected'] = False
 
     if st.session_state['pred'] is not None:
-        st.markdown(f"<p style='color: white;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: white;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
 
     if st.session_state['pred'] is not None and st.session_state['pred'] != 'This is not trained yet' :
         selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
@@ -167,4 +159,4 @@ def main():
             display_remedies(st.session_state['pred'])
 
 if __name__ == "__main__":
-    main() 
+    main()

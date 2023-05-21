@@ -70,10 +70,7 @@ def model_predict(image, model_func, transform):
     index = torch.argmax(output)
     pred = classes[index.item()]
     probs, _ = torch.max(F.softmax(output, dim=1), 1)
-    if probs < 0.93:
-        return "This is not trained yet ", probs
-    else:
-        return pred, probs
+    return pred, probs
 
 
 def add_bg_from_local(image_file):
@@ -169,11 +166,6 @@ def main():
 
         if st.session_state['selected_language'] == 'Malayalam':
             display_remedies_malayalam(st.session_state['pred'])
-
-    st.markdown("<hr>", unsafe_allow_html=True)
-    st.text("AI Leaf Disease Detection - Developed by Your Name")
-    st.text("Background image source: Unsplash")
-
 
 if __name__ == "__main__":
     main()

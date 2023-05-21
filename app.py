@@ -12,8 +12,8 @@ import streamlit as st
 import base64
 
 # Load the model and other necessary code
-  model = torchvision.models.resnet18(pretrained=True)
-  classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
+model = torchvision.models.resnet18(pretrained=True)
+classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
                   1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 
                   2:'The above leaf is Cassava Healthy leaf', 
                   3:'This is not trained yet',
@@ -30,7 +30,7 @@ import base64
                   14:'The above leaf is bean angular leaf spot',
                   15:'The above leaf is bean healthy', 
                   16:'The above leaf is bean rust'})
-  remedies = {
+remedies = {
       'The above leaf is Cassava (Cassava Mosaic)': [
            'Use of resistant variety Sripadmanaba suited for Tamil Nadu and Kerala. Mosaic tolerant varieties such as H-97 may be used to minimize economic loss of tubers. Select setts from healthy plants. Roug out and destroy infected plants in the field at early stage.Control whitefly by installing yellow sticky traps, removal of weed hosts, spray neem oil (20 ml / litre of water). Spray Dimethoate 30 EC (2 ml / litre of water) to control the vector.', 'കിഴങ്ങുവർഗ്ഗങ്ങളുടെ സാമ്പത്തിക നഷ്ടം കുറയ്ക്കുന്നതിന് H-97 പോലുള്ള മൊസൈക്ക് സഹിഷ്ണുതയുള്ള ഇനങ്ങൾ ഉപയോഗിക്കാം. ആരോഗ്യമുള്ള ചെടികളിൽ നിന്ന് സെറ്റുകൾ തിരഞ്ഞെടുക്കുക. രോഗബാധയുള്ള ചെടികളെ ആദ്യഘട്ടത്തിൽ തന്നെ പറിച്ച് നശിപ്പിക്കുക. മഞ്ഞ സ്റ്റിക്കി കെണികൾ സ്ഥാപിക്കുക, കളകളെ നീക്കം ചെയ്യുക, വേപ്പെണ്ണ (20 മില്ലി / ലിറ്റർ വെള്ളത്തിൽ) തളിക്കുക എന്നിവയിലൂടെ വെള്ളീച്ചയെ നിയന്ത്രിക്കുക. വെക്‌ടറിനെ നിയന്ത്രിക്കാൻ ഡൈമെത്തോയേറ്റ് 30 ഇസി (2 മില്ലി/ലിറ്റർ വെള്ളം) തളിക്കുക.',
            'CASSAVA(MOSAIC)(ENG).mp3', 'CASSAVA(MOSAIC)(MAL).m4a'
@@ -41,102 +41,101 @@ import base64
       ]
       # add remedies for other diseases in both English and Malayalam
   }
+selected_language = 'English'  # Set the default language
 
-  selected_language = 'English'  # Set the default language
 
+num_ftrs = model.fc.in_features
+model.fc = torch.nn.Linear(num_ftrs, len(classes))
+model_path = "epoch-8.pt"
+model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+model.eval()
 
-  num_ftrs = model.fc.in_features
-  model.fc = torch.nn.Linear(num_ftrs, len(classes))
-  model_path = "epoch-8.pt"
-  model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
-  model.eval()
+# Preprocessing
+transform=transforms.Compose([
+transforms.ToTensor(),
+    transforms.Resize((224,224)),
+    transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1, hue=0.1),
+    transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
+    transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
+    ])
 
-  # Preprocessing
-  transform=transforms.Compose([
-  transforms.ToTensor(),
-      transforms.Resize((224,224)),
-      transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1, hue=0.1),
-      transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
-      transforms.RandomHorizontalFlip(),
-      transforms.RandomVerticalFlip(),
-      transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
-      ])
+def model_predict(image, model_func, transform):
+    image_tensor = transform(image).float()
+    image_tensor = image_tensor.unsqueeze(0)
+    output = model_func(image_tensor)
+    index = torch.argmax(output)
+    pred = classes[index.item()]
+    probs, _ = torch.max(F.softmax(output, dim=1), 1)
+    return pred, probs
 
-  def model_predict(image, model_func, transform):
-      image_tensor = transform(image).float()
-      image_tensor = image_tensor.unsqueeze(0)
-      output = model_func(image_tensor)
-      index = torch.argmax(output)
-      pred = classes[index.item()]
-      probs, _ = torch.max(F.softmax(output, dim=1), 1)
-      return pred, probs
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url(data:image/{"jpg"};base64,{encoded_string.decode()});
+            background-size: cover
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-  def add_bg_from_local(image_file):
-      with open(image_file, "rb") as image_file:
-          encoded_string = base64.b64encode(image_file.read())
-      st.markdown(
-          f"""
-          <style>
-          .stApp {{
-              background-image: url(data:image/{"jpg"};base64,{encoded_string.decode()});
-              background-size: cover
-          }}
-          </style>
-          """,
-          unsafe_allow_html=True
-      )
+def clear_session_state():
+    st.session_state['pred'] = None
+    st.session_state['probs'] = None
+    st.session_state['language_selected'] = False
 
-  def clear_session_state():
-      st.session_state['pred'] = None
-      st.session_state['probs'] = None
-      st.session_state['language_selected'] = False
+def display_remedies(pred):
+    remedy = remedies.get(pred)
+    if remedy:
+        st.markdown("<p style='color:red;'>Remedy:</p>", unsafe_allow_html=True)
+        if selected_language == 'English':
+            audio_file = remedy[2]
+        else:
+            audio_file = remedy[3]
+        with open(audio_file, 'rb') as audio:
+            st.audio(audio.read(), format='audio/mp3')
+        if selected_language == 'English':
+            st.info(f" {remedy[0]}")
+        else:
+            st.info(f" {remedy[1]}")
+def display_remedies_malayalam(pred):
+    remedy = remedies.get(pred)
+    if remedy:
+        st.markdown("<p style='color:red;'>Remedy (Malayalam):</p>", unsafe_allow_html=True)
+        audio_file = remedy[3]
+        with open(audio_file, 'rb') as audio:
+            st.audio(audio.read(), format='audio/mp3')
+        st.info(f" {remedy[1]}")
+# Initialize SessionState
+def init_session_state():
+    if 'session_state' not in st.session_state:
+        st.session_state.session_state = {
+            'pred': None,
+            'probs': None,
+            'selected_language': 'English',
+            'language_selected': False
+        }
 
-  def display_remedies(pred):
-      remedy = remedies.get(pred)
-      if remedy:
-          st.markdown("<p style='color:red;'>Remedy:</p>", unsafe_allow_html=True)
-          if selected_language == 'English':
-              audio_file = remedy[2]
-          else:
-              audio_file = remedy[3]
-          with open(audio_file, 'rb') as audio:
-              st.audio(audio.read(), format='audio/mp3')
-          if selected_language == 'English':
-              st.info(f" {remedy[0]}")
-          else:
-              st.info(f" {remedy[1]}")
-  def display_remedies_malayalam(pred):
-      remedy = remedies.get(pred)
-      if remedy:
-          st.markdown("<p style='color:red;'>Remedy (Malayalam):</p>", unsafe_allow_html=True)
-          audio_file = remedy[3]
-          with open(audio_file, 'rb') as audio:
-              st.audio(audio.read(), format='audio/mp3')
-          st.info(f" {remedy[1]}")
-  # Initialize SessionState
-  def init_session_state():
-      if 'session_state' not in st.session_state:
-          st.session_state.session_state = {
-              'pred': None,
-              'probs': None,
-              'selected_language': 'English',
-              'language_selected': False
-          }
+def main():
+    init_session_state()
 
-  def main():
-      init_session_state()
+    st.set_page_config(page_title="Dr.Leaf", page_icon="logo.png")
+    header_container = st.beta_container()
+    header_columns = header_container.beta_columns([1, 8])
 
-      st.set_page_config(page_title="Dr.Leaf", page_icon="logo.png")
-      header_container = st.beta_container()
-      header_columns = header_container.beta_columns([1, 8])
+    with header_columns[0]:
+      st.image('logo.png', width=80)
 
-      with header_columns[0]:
-        st.image('logo.png', width=80)
+    with header_columns[1]:
+      st.title('Dr.Leaf')
 
-      with header_columns[1]:
-        st.title('Dr.Leaf')
-
-      add_bg_from_local('background app2a.jpg')
+    add_bg_from_local('background app2a.jpg')
 def home_page():
   # Load the model
       st.write("Instructions:")

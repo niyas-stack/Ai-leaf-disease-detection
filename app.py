@@ -32,7 +32,7 @@ classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ',
 remedies = {
     'The above leaf is Cassava (Cassava Mosaic)': [
         'Use of resistant variety Sripadmanaba suited for Tamil Nadu and Kerala. Mosaic tolerant varieties such as H-97 may be used to minimize economic loss of tubers. Select setts from healthy plants. Roug out and destroy infected plants in the field at early stage.Control whitefly by installing yellow sticky traps, removal of weed hosts, spray neem oil (20 ml / litre of water). Spray Dimethoate 30 EC (2 ml / litre of water) to control the vector', 'കിഴങ്ങുവർഗ്ഗങ്ങളുടെ സാമ്പത്തിക നഷ്ടം കുറയ്ക്കുന്നതിന് H-97 പോലുള്ള മൊസൈക്ക് സഹിഷ്ണുതയുള്ള ഇനങ്ങൾ ഉപയോഗിക്കാം. ആരോഗ്യമുള്ള ചെടികളിൽ നിന്ന് സെറ്റുകൾ തിരഞ്ഞെടുക്കുക. രോഗബാധയുള്ള ചെടികളെ ആദ്യഘട്ടത്തിൽ തന്നെ പറിച്ച് നശിപ്പിക്കുക. മഞ്ഞ സ്റ്റിക്കി കെണികൾ സ്ഥാപിക്കുക, കളകളെ നീക്കം ചെയ്യുക, വേപ്പെണ്ണ (20 മില്ലി / ലിറ്റർ വെള്ളത്തിൽ) തളിക്കുക എന്നിവയിലൂടെ വെള്ളീച്ചയെ നിയന്ത്രിക്കുക. വെക്‌ടറിനെ നിയന്ത്രിക്കാൻ ഡൈമെത്തോയേറ്റ് 30 ഇസി (2 മില്ലി/ലിറ്റർ വെള്ളം) തളിക്കുക.',
-        '96_Songs_The_Life_of_Ram_Video_Song_Vijay_Sethupathi,_Trisha_Govind.mp3', 'cassava.m4a'
+        'CASSAVA(MOSAIC)(ENG).ogg', 'cassava.m4a'
     ],
     'The above leaf is Cassava CB (Cassava Bacterial Blight)': [
         'Remedy for Cassava Bacterial Blight', 'കാസവ ബാക്ടീരിയൽ ബ്ലൈറ്റിന്റെ പരിഹാരം',

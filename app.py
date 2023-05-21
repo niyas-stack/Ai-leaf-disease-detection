@@ -137,10 +137,8 @@ def main():
       st.title('Dr.Leaf')
 
     add_bg_from_local('background app2a.jpg')
-    st.write("Instructions:")
-    st.write("👉 Take a clear photo of a single leaf.")
-    st.write("👉 Ensure that the leaf doesn't have any dust or other unwanted things.")
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
     if uploaded_file is not None:
         clear_session_state()  # Clear session state when a new file is uploaded
 
@@ -169,4 +167,4 @@ def main():
             display_remedies(st.session_state['pred'])
 
 if __name__ == "__main__":
-    main()
+    main() in

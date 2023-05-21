@@ -51,16 +51,18 @@ model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 summary(model, input_size=(3, 224, 224))
 model.eval()
 
-#image transformation
-transform=transforms.Compose([
-transforms.ToTensor(),
-    transforms.Resize((224,224)),
+# image transformation
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Resize((224, 224)),
     transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1, hue=0.1),
     transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
-    transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
-    ])
+    transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+])
+
+
 def model_predict(image, model_func, transform):
     image_tensor = transform(image).float()
     image_tensor = image_tensor.unsqueeze(0)
@@ -72,7 +74,6 @@ def model_predict(image, model_func, transform):
         return "This is not trained yet ", probs
     else:
         return pred, probs
-
 
 
 def add_bg_from_local(image_file):
@@ -90,6 +91,7 @@ def add_bg_from_local(image_file):
         unsafe_allow_html=True
     )
 
+
 def display_remedies(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -105,6 +107,7 @@ def display_remedies(pred):
         else:
             st.success(f" {remedy[1]}")
 
+
 def display_remedies_malayalam(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -113,6 +116,7 @@ def display_remedies_malayalam(pred):
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
         st.success(f" {remedy[1]}")
+
 
 def init_session_state():
     if 'pred' not in st.session_state:
@@ -124,10 +128,12 @@ def init_session_state():
     if 'language_selected' not in st.session_state:
         st.session_state['language_selected'] = False
 
+
 def clear_session_state():
     st.session_state['pred'] = None
     st.session_state['probs'] = None
     st.session_state['language_selected'] = False
+
 
 def main():
     init_session_state()
@@ -152,16 +158,22 @@ def main():
 
     if st.session_state['pred'] is not None:
         st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']:.2f}</p>", unsafe_allow_html=True)
 
-        if st.session_state['pred'] != "This is not trained yet":
-            selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
+        if not st.session_state['language_selected']:
+            selected_language = st.selectbox("Select Language", ("English", "Malayalam"))
             st.session_state['selected_language'] = selected_language
+            st.session_state['language_selected'] = True
 
-            if st.session_state['selected_language'] == 'Malayalam':
-                display_remedies_malayalam(st.session_state['pred'])
-            else:
-                display_remedies(st.session_state['pred'])
+        display_remedies(st.session_state['pred'])
+
+        if st.session_state['selected_language'] == 'Malayalam':
+            display_remedies_malayalam(st.session_state['pred'])
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.text("AI Leaf Disease Detection - Developed by Your Name")
+    st.text("Background image source: Unsplash")
+
 
 if __name__ == "__main__":
     main()

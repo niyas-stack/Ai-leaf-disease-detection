@@ -150,6 +150,5 @@ def main():
     else:
       display_remedies_malayalam(st.session_state.session_state['pred'])
 
-if __name__=='__main__':
-    main()
-
+if _name=='__main_':
+    main()

@@ -85,7 +85,12 @@ def add_bg_from_local(image_file):
         """,
         unsafe_allow_html=True
     )
-
+    
+def clear_session_state():
+    st.session_state['pred'] = None
+    st.session_state['probs'] = None
+    st.session_state['language_selected'] = False
+    
 def display_remedies(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -127,6 +132,7 @@ def main():
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
+        clear_session_state()
         image = Image.open(uploaded_file)
         st.image(image, caption='Uploaded Image', width=300)
         st.write("")

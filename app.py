@@ -154,5 +154,5 @@ def main():
       else:
          display_remedies(st.session_state.session_state['pred'])
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()

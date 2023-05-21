@@ -126,8 +126,17 @@ def init_session_state():
 def main():
     init_session_state()
 
-    st.set_page_config(page_title="AI Leaf Disease Detection", page_icon=":leaves:")
-    st.markdown("<h1 style='color: green;'>AI Leaf Disease Detection</h1>", unsafe_allow_html=True)
+    st.set_page_config(page_title="Dr.Leaf", page_icon="logo.png")
+    header_container = st.beta_container()
+
+    # Add logo and title to the header
+    header_columns = header_container.beta_columns([1, 8])  # Adjust column widths as needed
+
+    with header_columns[0]:
+        st.image('logo.png', width=70)
+
+    with header_columns[1]:
+        st.title('Dr.Leaf')
     add_bg_from_local('background app2a.jpg')
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 

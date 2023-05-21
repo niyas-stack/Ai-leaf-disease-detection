@@ -128,7 +128,7 @@ def main():
 
     st.set_page_config(page_title="AI Leaf Disease Detection", page_icon=":leaves:")
     st.markdown("<h1 style='color: green;'>AI Leaf Disease Detection</h1>", unsafe_allow_html=True)
-    add_bg_from_local('background.jpg')
+    add_bg_from_local('background app2a.jpg')
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
@@ -148,7 +148,7 @@ def main():
         st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
 
-    if st.session_state['pred'] is not None:
+    if st.session_state['pred'] is not None and st.session_state['pred'] != 'This is not trained yet' :
         selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
         st.session_state['selected_language'] = selected_language
 

@@ -36,7 +36,7 @@ remedies = {
     ],
     'The above leaf is Cassava CB (Cassava Bacterial Blight)': [
         'Remedy for Cassava Bacterial Blight', 'കാസവ ബാക്ടീരിയൽ ബ്ലൈറ്റിന്റെ പരിഹാരം',
-        'cassava.m4a', 'cassava.m4a'
+        'cassava.m4a', 'CASSAVA(MOSAIC)(MAL).m4a'
     ]
     # add remedies for other diseases in both English and Malayalam
 }

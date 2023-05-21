@@ -10,35 +10,35 @@ from PIL import Image
 import streamlit as st
 import base64
 
+
 # Load the model
 model = torchvision.models.resnet18(pretrained=True)
 classes = {
    0: 'The above leaf is Cassava (Cassava Mosaic)',
-   1: 'The above leaf is Cassava CB (Cassava Bacterial Blight)',
-   2: 'The above leaf is Cassava Healthy leaf',
-   3: 'The above leaf is Tomato Bacterial spot',
-   4: 'The above leaf is Tomato early blight',
-   5: 'The above leaf is Tomato Late blight',
-   6: 'The above leaf is Tomato Leaf Mold',
-   7: 'The above leaf is Tomato Septoria leaf spot',
-   8: 'The above leaf is Tomato Spider mites Two-spotted spider mite',
-   9: 'The above leaf is Tomato Target Spot',
-   10: 'The above leaf is Tomato Yellow Leaf Curl Virus',
-   11: 'The above leaf is Tomato mosaic virus',
-   12: 'The above leaf is Tomato healthy',
-   13: 'The above leaf is bean angular leaf spot',
-   14: 'The above leaf is bean healthy',
-   15: 'The above leaf is bean rust'
+    1: 'The above leaf is Cassava CB (Cassava Bacterial Blight)',
+    2: 'The above leaf is Cassava Healthy leaf',
+    3: 'The above leaf is Tomato Bacterial spot',
+    4: 'The above leaf is Tomato early blight',
+    5: 'The above leaf is Tomato Late blight',
+    6: 'The above leaf is Tomato Leaf Mold',
+    7: 'The above leaf is Tomato Septoria leaf spot',
+    8: 'The above leaf is Tomato Spider mites Two-spotted spider mite',
+    9: 'The above leaf is Tomato Target Spot',
+    10: 'The above leaf is Tomato Yellow Leaf Curl Virus',
+    11: 'The above leaf is Tomato mosaic virus',
+    12: 'The above leaf is Tomato healthy',
+    13: 'The above leaf is bean angular leaf spot',
+    14: 'The above leaf is bean healthy',
+    15: 'The above leaf is bean rust'
 }
-
 remedies = {
     'The above leaf is Cassava (Cassava Mosaic)': [
-        'Remedy for Cassava Mosaic', 'കാസവ മോസായികയുടെ പരിഹാരം',
-        '96_Songs_The_Life_of_Ram_Video_Song_Vijay_Sethupathi,_Trisha_Govind.mp3', 'cassava.m4a'
+         'Remedy for Cassava Mosaic', 'കാസവ മോസായികയുടെ പരിഹാരം',
+         '96_Songs_The_Life_of_Ram_Video_Song_Vijay_Sethupathi,_Trisha_Govind.mp3', 'cassava.m4a'
     ],
     'The above leaf is Cassava CB (Cassava Bacterial Blight)': [
-        'Remedy for Cassava Bacterial Blight', 'കാസവ ബാക്ടീരിയൽ ബ്ലൈറ്റിന്റെ പരിഹാരം',
-        'cassava.m4a', 'cassava.m4a'
+       'Remedy for Cassava Bacterial Blight', 'കാസവ ബാക്ടീരിയൽ ബ്ലൈറ്റിന്റെ പരിഹാരം',
+       'cassava.m4a', 'cassava.m4a'
     ]
     # add remedies for other diseases in both English and Malayalam
 }
@@ -102,10 +102,9 @@ def display_remedies(pred):
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
         if selected_language == 'English':
-            st.success(f" {remedy[0]}")
+            st.info(f" {remedy[0]}")
         else:
-            st.success(f" {remedy[1]}")
-
+            st.info(f" {remedy[1]}")
 def display_remedies_malayalam(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -113,22 +112,16 @@ def display_remedies_malayalam(pred):
         audio_file = remedy[3]
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
-        st.success(f" {remedy[1]}")
-
+        st.info(f" {remedy[1]}")
+# Initialize SessionState
 def init_session_state():
-    if 'pred' not in st.session_state:
-        st.session_state['pred'] = None
-    if 'probs' not in st.session_state:
-        st.session_state['probs'] = None
-    if 'selected_language' not in st.session_state:
-        st.session_state['selected_language'] = 'English'
-    if 'language_selected' not in st.session_state:
-        st.session_state['language_selected'] = False
-
-def clear_session_state():
-    st.session_state['pred'] = None
-    st.session_state['probs'] = None
-    st.session_state['language_selected'] = False
+    if 'session_state' not in st.session_state:
+        st.session_state.session_state = {
+            'pred': None,
+            'probs': None,
+            'selected_language': 'English',
+            'language_selected': False
+        }
 
 def main():
     init_session_state()
@@ -139,31 +132,27 @@ def main():
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
-        clear_session_state()  # Clear session state when a new file is uploaded
-
         image = Image.open(uploaded_file)
         st.image(image, caption='Uploaded Image', width=300)
         st.write("")
 
         if st.button("Classify", key="classify_btn"):
             pred, probs = model_predict(image, model, transform)
-            st.session_state['pred'] = pred
-            st.session_state['probs'] = probs.item()
-            st.session_state['language_selected'] = False
+            st.session_state.session_state['pred'] = pred
+            st.session_state.session_state['probs'] = probs.item()
+            st.session_state.session_state['language_selected'] = False
 
-    if st.session_state['pred'] is not None:
-        st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
+    if st.session_state.session_state['pred'] is not None:
+      st.markdown(f"<p style='color: red;'>Prediction: {st.session_state.session_state['pred']}</p>", unsafe_allow_html=True)
+      st.markdown(f"<p style='color: red;'>Probability: {st.session_state.session_state['probs']}</p>", unsafe_allow_html=True)
+    if st.session_state.session_state['pred'] is not None:
+      selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
+      st.session_state.session_state['selected_language'] = selected_language
+    if st.session_state.session_state['pred'] is not None:
+      if st.session_state.session_state['selected_language'] == 'Malayalam':
+         display_remedies_malayalam(st.session_state.session_state['pred'])
+      else:
+         display_remedies(st.session_state.session_state['pred'])
 
-    if st.session_state['pred'] is not None:
-        selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
-        st.session_state['selected_language'] = selected_language
-
-    if st.session_state['pred'] is not None:
-        if st.session_state['selected_language'] == 'Malayalam':
-            display_remedies_malayalam(st.session_state['pred'])
-        else:
-            display_remedies(st.session_state['pred'])
-
-if __name__ == "__main__":
-    main()
+if _name_ == "_main_":
+    main()

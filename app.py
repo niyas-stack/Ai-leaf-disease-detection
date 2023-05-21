@@ -32,7 +32,7 @@ classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ',
                 16:'The above leaf is bean rust'})
 
 remedies = {
-    'The above leaf is Cassava (Cassava Mosaic)': [
+    'The above leaf is Cassava (Cassava Mosaic) ': [
          'Remedy for Cassava Mosaic', 'കാസവ മോസായികയുടെ പരിഹാരം',
          'CASSAVA(MOSAIC)(ENG).mp3', 'CASSAVA(MOSAIC)(MAL).m4a'
     ],
@@ -54,14 +54,14 @@ model.eval()
 
 # Preprocessing
 transform=transforms.Compose([
-transforms.ToTensor(),
+    transforms.ToTensor(),
     transforms.Resize((224,224)),
     transforms.ColorJitter(brightness=0.2, contrast=0.1, saturation=0.1, hue=0.1),
     transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
     transforms.RandomHorizontalFlip(),
     transforms.RandomVerticalFlip(),
     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
-    ])
+])
 
 def model_predict(image, model_func, transform):
     image_tensor = transform(image).float()
@@ -101,6 +101,7 @@ def display_remedies(pred):
             st.info(f" {remedy[0]}")
         else:
             st.info(f" {remedy[1]}")
+
 def display_remedies_malayalam(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -109,6 +110,7 @@ def display_remedies_malayalam(pred):
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
         st.info(f" {remedy[1]}")
+
 # Initialize SessionState
 def init_session_state():
     if 'session_state' not in st.session_state:
@@ -151,17 +153,17 @@ def main():
             st.session_state.session_state['language_selected'] = False
 
     if st.session_state.session_state['pred'] is not None:
-      st.markdown(f"<p style='color: white;'>Prediction: {st.session_state.session_state['pred']}</p>", unsafe_allow_html=True)
-      st.markdown(f"<p style='color: white;'>Probability: {st.session_state.session_state['probs']}</p>", unsafe_allow_html=True)
-    if st.session_state.session_state['pred'] is not None and st.session_state.session_state['pred'] is not 'This is not trained yet':
-      selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
-      st.session_state.session_state['selected_language'] = selected_language
-    if st.session_state.session_state['pred'] is not None:
-      if st.session_state.session_state['selected_language'] == 'Malayalam':
-         display_remedies_malayalam(st.session_state.session_state['pred'])
-      else:
-         display_remedies(st.session_state.session_state['pred'])
+        st.markdown(f"<p style='color: white;'>Prediction: {st.session_state.session_state['pred']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: white;'>Probability: {st.session_state.session_state['probs']}</p>", unsafe_allow_html=True)
+        if st.session_state.session_state['pred'] != 'This is not trained yet':
+            selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
+            st.session_state.session_state['selected_language'] = selected_language
+
+    if st.session_state.session_state['pred'] is not None and not st.session_state.session_state['language_selected']:
+        if st.session_state.session_state['selected_language'] == 'Malayalam':
+            display_remedies_malayalam(st.session_state.session_state['pred'])
+        else:
+            display_remedies(st.session_state.session_state['pred'])
 
 if __name__ == "__main__":
-   main()
-   
+    main()

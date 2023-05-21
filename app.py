@@ -153,8 +153,8 @@ def main():
             st.session_state['language_selected'] = False
 
     if st.session_state['pred'] is not None:
-        st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: white;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: white;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
 
     if st.session_state['pred'] is not None and st.session_state['pred'] != 'This is not trained yet' :
         selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")

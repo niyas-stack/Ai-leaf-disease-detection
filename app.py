@@ -32,7 +32,7 @@ classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ',
                 16:'The above leaf is bean rust'})
 remedies = {
     'The above leaf is Cassava (Cassava Mosaic)': [
-         'Use of resistant variety Sripadmanaba suited for Tamil Nadu and Kerala. Mosaic tolerant varieties such as H-97 may be used to minimize economic loss of tubers. Select setts from healthy plants. Roug out and destroy infected plants in the field at early stage.Control whitefly by installing yellow sticky traps, removal of weed hosts, spray neem oil (20 ml / litre of water). Spray Dimethoate 30 EC (2 ml / litre of water) to control the vector.', 'കിഴങ്ങുവർഗ്ഗങ്ങളുടെ സാമ്പത്തിക നഷ്ടം കുറയ്ക്കുന്നതിന് H-97 പോലുള്ള മൊസൈക്ക് സഹിഷ്ണുതയുള്ള ഇനങ്ങൾ ഉപയോഗിക്കാം. ആരോഗ്യമുള്ള ചെടികളിൽ നിന്ന് സെറ്റുകൾ തിരഞ്ഞെടുക്കുക. രോഗബാധയുള്ള ചെടികളെ ആദ്യഘട്ടത്തിൽ തന്നെ പറിച്ച് നശിപ്പിക്കുക. മഞ്ഞ സ്റ്റിക്കി കെണികൾ സ്ഥാപിക്കുക, കളകളെ നീക്കം ചെയ്യുക, വേപ്പെണ്ണ (20 മില്ലി / ലിറ്റർ വെള്ളത്തിൽ) തളിക്കുക എന്നിവയിലൂടെ വെള്ളീച്ചയെ നിയന്ത്രിക്കുക. വെക്‌ടറിനെ നിയന്ത്രിക്കാൻ ഡൈമെത്തോയേറ്റ് 30 ഇസി (2 മില്ലി/ലിറ്റർ വെള്ളം) തളിക്കുക.',
+         'Use of resistant variety Sripadmanaba suited for Tamil Nadu and Kerala. Mosaic tolerant varieties such as H-97 may be used to minimize economic loss of tubers. Select setts from healthy plants. Roug out and destroy infected plants in the field at early stage.Control whitefly by installing yellow sticky traps, removal of weed hosts, spray neem oil (20 ml / litre of water). Spray Dimethoate 30 EC (2 ml / litre of water) to control the vector.', 'കിഴങ്ങുവർഗ്ഗങ്ങളുടെ സാമ്പത്തിക നഷ്ടം കുറയ്ക്കുന്നതിന് H-97 പോലുള്ള മൊസൈക്ക് സഹിഷ്ണുതയുള്ള ഇനങ്ങൾ ഉപയോഗിക്കാം. ആരോഗ്യമുള്ള ചെടികളിൽ നിന്ന് സെറ്റുകൾ തിരഞ്ഞെടുക്കുക. രോഗബാധയുള്ള ചെടികളെ ആദ്യഘട്ടത്തിൽ തന്നെ പറിച്ച് നശിപ്പിക്കുക. മഞ്ഞ സ്റ്റിക്കി കെണികൾ സ്ഥാപിക്കുക, കളകളെ നീക്കം ചെയ്യുക, വേപ്പെണ്ണ (20 മില്ലി / ലിറ്റർ വെള്ളത്തിൽ) തളിക്കുക എന്നിവയിലൂടെ വെള്ളീച്ചയെ നിയന്ത്രിക്കുക. വെക്‌ടറിനെ നിയന്ത്രിക്കാൻ ഡൈമെത്തോയേറ്റ് 30 ഇസി (2 മില്ലി/ലിറ്റർ വെള്ളം) തളിക്കുക.',
          'CASSAVA(MOSAIC)(ENG).mp3', 'CASSAVA(MOSAIC)(MAL).m4a'
     ],
     'The above leaf is Cassava CB (Cassava Bacterial Blight)': [
@@ -85,7 +85,12 @@ def add_bg_from_local(image_file):
         """,
         unsafe_allow_html=True
     )
-
+    
+def clear_session_state():
+    st.session_state['pred'] = None
+    st.session_state['probs'] = None
+    st.session_state['language_selected'] = False
+    
 def display_remedies(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -121,33 +126,45 @@ def init_session_state():
 def main():
     init_session_state()
 
-    st.set_page_config(page_title="AI Leaf Disease Detection", page_icon=":leaves:")
-    st.markdown("<h1 style='color: green;'>AI Leaf Disease Detection</h1>", unsafe_allow_html=True)
+    st.set_page_config(page_title="Dr.Leaf", page_icon="logo.png")
+    header_container = st.beta_container()
+    header_columns = header_container.beta_columns([1, 8])
+
+    with header_columns[0]:
+      st.image('logo.png', width=80)
+
+    with header_columns[1]:
+      st.title('Dr.Leaf')
+
     add_bg_from_local('background app2a.jpg')
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
+        clear_session_state()  # Clear session state when a new file is uploaded
+
         image = Image.open(uploaded_file)
         st.image(image, caption='Uploaded Image', width=300)
         st.write("")
 
         if st.button("Classify", key="classify_btn"):
             pred, probs = model_predict(image, model, transform)
-            st.session_state.session_state['pred'] = pred
-            st.session_state.session_state['probs'] = probs.item()
-            st.session_state.session_state['language_selected'] = False
+            st.session_state['pred'] = pred
+            st.session_state['probs'] = probs.item()
+            st.session_state['language_selected'] = False
 
-    if st.session_state.session_state['pred'] is not None:
-      st.markdown(f"<p style='color: red;'>Prediction: {st.session_state.session_state['pred']}</p>", unsafe_allow_html=True)
-      st.markdown(f"<p style='color: red;'>Probability: {st.session_state.session_state['probs']}</p>", unsafe_allow_html=True)
-    if st.session_state.session_state['pred'] is not None and not st.session_state.session_state['language_selected']:
-      selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
-      st.session_state.session_state['selected_language'] = selected_language
-      st.session_state.session_state['language_selected'] = True
+    if st.session_state['pred'] is not None:
+        st.markdown(f"<p style='color: white;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color: white;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
 
-    if st.session_state.session_state['selected_language'] == 'English':
-      display_remedies(st.session_state.session_state['pred'])
-    else:
-      display_remedies_malayalam(st.session_state.session_state['pred'])
+    if st.session_state['pred'] is not None and st.session_state['pred'] != 'This is not trained yet' :
+        selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
+        st.session_state['selected_language'] = selected_language
+
+    if st.session_state['pred'] is not None:
+        if st.session_state['selected_language'] == 'Malayalam':
+            display_remedies_malayalam(st.session_state['pred'])
+        else:
+            display_remedies(st.session_state['pred'])
+
 if __name__ == "__main__":
-      main()# Your code for the "Home" page
+    main() 

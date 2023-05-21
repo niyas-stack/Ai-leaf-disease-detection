@@ -138,7 +138,7 @@ def main():
 
     add_bg_from_local('background app2a.jpg')
     st.write("Instructions:")
-    st.write("👉. Take a clear photo of a single leaf.")
+    st.write("👉 Take a clear photo of a single leaf.")
     st.write("👉 Ensure that the leaf doesn't have any dust or other unwanted things.")
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:

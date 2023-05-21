@@ -12,9 +12,6 @@ import streamlit as st
 import base64
 
 # Load the model and other necessary code
-
-def home_page():
-  # Load the model
   model = torchvision.models.resnet18(pretrained=True)
   classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
                   1:'The above leaf is Cassava CB (Cassava Bacterial Blight)', 
@@ -140,6 +137,8 @@ def home_page():
         st.title('Dr.Leaf')
 
       add_bg_from_local('background app2a.jpg')
+def home_page():
+  # Load the model
       st.write("Instructions:")
       st.write("👉 Take a clear photo of a single leaf.")
       st.write("👉 Ensure that the leaf doesn't have any dust or other unwanted things.")
@@ -171,8 +170,6 @@ def home_page():
           else:
               display_remedies(st.session_state['pred'])
 
-  if __name__ == "__main__":
-      main()# Your code for the "Home" page
 
 def about_page():
     # Your code for the "About" page
@@ -190,6 +187,7 @@ elif nav_option == 'About':
     about_page()
 elif nav_option == 'Contact':
     contact_page()
-
+if __name__ == "__main__":
+      main()# Your code for the "Home" page
 
 

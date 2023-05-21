@@ -65,7 +65,6 @@ transforms.ToTensor(),
 def model_predict(image, model_func, transform):
     image_tensor = transform(image).float()
     image_tensor = image_tensor.unsqueeze(0)
-    image_tensor=image_tensor.to(device)
     output = model_func(image_tensor)
     index = torch.argmax(output)
     pred = classes[index.item()]

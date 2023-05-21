@@ -138,7 +138,9 @@ def main():
 
     add_bg_from_local('background app2a.jpg')
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
+    st.write("Instructions:")
+    st.write("1. Take a clear photo of a single leaf.")
+    st.write("2. Ensure that the leaf doesn't have any dust or other unwanted things.")
     if uploaded_file is not None:
         clear_session_state()  # Clear session state when a new file is uploaded
 

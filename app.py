@@ -86,7 +86,11 @@ def add_bg_from_local(image_file):
         """,
         unsafe_allow_html=True
     )
-
+text_area_style = """
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+"""
 def display_remedies(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -98,9 +102,9 @@ def display_remedies(pred):
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
         if selected_language == 'English':
-            st.info(f" {remedy[0]}")
+            st.text_area("", value=remedy[0], height=200)
         else:
-            st.info(f" {remedy[1]}")
+            st.text_area("", value=remedy[1], height=200)
 
 def display_remedies_malayalam(pred):
     remedy = remedies.get(pred)
@@ -109,8 +113,8 @@ def display_remedies_malayalam(pred):
         audio_file = remedy[3]
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
-        st.info(f" {remedy[1]}")
-
+        st.text_area(remedy[1], height=150, key='remedy_area', value='', style=text_area_style)
+        st.text_area("", value=remedy[1], height=200)
 # Initialize SessionState
 def init_session_state():
     if 'session_state' not in st.session_state:

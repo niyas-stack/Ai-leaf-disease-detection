@@ -10,6 +10,7 @@ from PIL import Image
 import streamlit as st
 import base64
 
+
 # Load the model
 model = torchvision.models.resnet18(pretrained=True)
 classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ', 
@@ -31,12 +32,12 @@ classes = dict({0:'The above leaf is Cassava (Cassava Mosaic) ',
                 16:'The above leaf is bean rust'})
 remedies = {
     'The above leaf is Cassava (Cassava Mosaic)': [
-        'Use of resistant variety Sripadmanaba suited for Tamil Nadu and Kerala. Mosaic tolerant varieties such as H-97 may be used to minimize economic loss of tubers. Select setts from healthy plants. Roug out and destroy infected plants in the field at early stage.Control whitefly by installing yellow sticky traps, removal of weed hosts, spray neem oil (20 ml / litre of water). Spray Dimethoate 30 EC (2 ml / litre of water) to control the vector', 'കിഴങ്ങുവർഗ്ഗങ്ങളുടെ സാമ്പത്തിക നഷ്ടം കുറയ്ക്കുന്നതിന് H-97 പോലുള്ള മൊസൈക്ക് സഹിഷ്ണുതയുള്ള ഇനങ്ങൾ ഉപയോഗിക്കാം. ആരോഗ്യമുള്ള ചെടികളിൽ നിന്ന് സെറ്റുകൾ തിരഞ്ഞെടുക്കുക. രോഗബാധയുള്ള ചെടികളെ ആദ്യഘട്ടത്തിൽ തന്നെ പറിച്ച് നശിപ്പിക്കുക. മഞ്ഞ സ്റ്റിക്കി കെണികൾ സ്ഥാപിക്കുക, കളകളെ നീക്കം ചെയ്യുക, വേപ്പെണ്ണ (20 മില്ലി / ലിറ്റർ വെള്ളത്തിൽ) തളിക്കുക എന്നിവയിലൂടെ വെള്ളീച്ചയെ നിയന്ത്രിക്കുക. വെക്‌ടറിനെ നിയന്ത്രിക്കാൻ ഡൈമെത്തോയേറ്റ് 30 ഇസി (2 മില്ലി/ലിറ്റർ വെള്ളം) തളിക്കുക.',
-        '96_Songs_The_Life_of_Ram_Video_Song_Vijay_Sethupathi,_Trisha_Govind.mp3', 'cassava.m4a'
+         'Remedy for Cassava Mosaic', 'കിഴങ്ങുവർഗ്ഗങ്ങളുടെ സാമ്പത്തിക നഷ്ടം കുറയ്ക്കുന്നതിന് H-97 പോലുള്ള മൊസൈക്ക് സഹിഷ്ണുതയുള്ള ഇനങ്ങൾ ഉപയോഗിക്കാം. ആരോഗ്യമുള്ള ചെടികളിൽ നിന്ന് സെറ്റുകൾ തിരഞ്ഞെടുക്കുക. രോഗബാധയുള്ള ചെടികളെ ആദ്യഘട്ടത്തിൽ തന്നെ പറിച്ച് നശിപ്പിക്കുക. മഞ്ഞ സ്റ്റിക്കി കെണികൾ സ്ഥാപിക്കുക, കളകളെ നീക്കം ചെയ്യുക, വേപ്പെണ്ണ (20 മില്ലി / ലിറ്റർ വെള്ളത്തിൽ) തളിക്കുക എന്നിവയിലൂടെ വെള്ളീച്ചയെ നിയന്ത്രിക്കുക. വെക്‌ടറിനെ നിയന്ത്രിക്കാൻ ഡൈമെത്തോയേറ്റ് 30 ഇസി (2 മില്ലി/ലിറ്റർ വെള്ളം) തളിക്കുക.',
+         '96_Songs_The_Life_of_Ram_Video_Song_Vijay_Sethupathi,_Trisha_Govind.mp3', 'CASSAVA(MOSAIC)(MAL).m4a'
     ],
     'The above leaf is Cassava CB (Cassava Bacterial Blight)': [
-        'Remedy for Cassava Bacterial Blight', 'കാസവ ബാക്ടീരിയൽ ബ്ലൈറ്റിന്റെ പരിഹാരം',
-        'cassava.m4a', 'cassava.m4a'
+       'Remedy for Cassava Bacterial Blight', 'കാസവ ബാക്ടീരിയൽ ബ്ലൈറ്റിന്റെ പരിഹാരം',
+       'cassava.m4a', 'cassava.m4a'
     ]
     # add remedies for other diseases in both English and Malayalam
 }
@@ -48,10 +49,9 @@ num_ftrs = model.fc.in_features
 model.fc = torch.nn.Linear(num_ftrs, len(classes))
 model_path = "epoch-8.pt"
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
-summary(model, input_size=(3, 224, 224))
 model.eval()
 
-#image transformation
+# Preprocessing
 transform=transforms.Compose([
 transforms.ToTensor(),
     transforms.Resize((224,224)),
@@ -61,6 +61,7 @@ transforms.ToTensor(),
     transforms.RandomVerticalFlip(),
     transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
     ])
+
 def model_predict(image, model_func, transform):
     image_tensor = transform(image).float()
     image_tensor = image_tensor.unsqueeze(0)
@@ -68,12 +69,7 @@ def model_predict(image, model_func, transform):
     index = torch.argmax(output)
     pred = classes[index.item()]
     probs, _ = torch.max(F.softmax(output, dim=1), 1)
-    if probs < 0.93:
-        return "This is not trained yet ", probs
-    else:
-        return pred, probs
-
-
+    return pred, probs
 
 def add_bg_from_local(image_file):
     with open(image_file, "rb") as image_file:
@@ -101,10 +97,9 @@ def display_remedies(pred):
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
         if selected_language == 'English':
-            st.success(f" {remedy[0]}")
+            st.info(f" {remedy[0]}")
         else:
-            st.success(f" {remedy[1]}")
-
+            st.info(f" {remedy[1]}")
 def display_remedies_malayalam(pred):
     remedy = remedies.get(pred)
     if remedy:
@@ -112,22 +107,16 @@ def display_remedies_malayalam(pred):
         audio_file = remedy[3]
         with open(audio_file, 'rb') as audio:
             st.audio(audio.read(), format='audio/mp3')
-        st.success(f" {remedy[1]}")
-
+        st.info(f" {remedy[1]}")
+# Initialize SessionState
 def init_session_state():
-    if 'pred' not in st.session_state:
-        st.session_state['pred'] = None
-    if 'probs' not in st.session_state:
-        st.session_state['probs'] = None
-    if 'selected_language' not in st.session_state:
-        st.session_state['selected_language'] = 'English'
-    if 'language_selected' not in st.session_state:
-        st.session_state['language_selected'] = False
-
-def clear_session_state():
-    st.session_state['pred'] = None
-    st.session_state['probs'] = None
-    st.session_state['language_selected'] = False
+    if 'session_state' not in st.session_state:
+        st.session_state.session_state = {
+            'pred': None,
+            'probs': None,
+            'selected_language': 'English',
+            'language_selected': False
+        }
 
 def main():
     init_session_state()
@@ -138,30 +127,27 @@ def main():
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
-        clear_session_state()  # Clear session state when a new file is uploaded
-
         image = Image.open(uploaded_file)
         st.image(image, caption='Uploaded Image', width=300)
         st.write("")
 
         if st.button("Classify", key="classify_btn"):
             pred, probs = model_predict(image, model, transform)
-            st.session_state['pred'] = pred
-            st.session_state['probs'] = probs.item()
-            st.session_state['language_selected'] = False
+            st.session_state.session_state['pred'] = pred
+            st.session_state.session_state['probs'] = probs.item()
+            st.session_state.session_state['language_selected'] = False
 
-    if st.session_state['pred'] is not None:
-        st.markdown(f"<p style='color: red;'>Prediction: {st.session_state['pred']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color: red;'>Probability: {st.session_state['probs']}</p>", unsafe_allow_html=True)
-
-        if st.session_state['pred'] != "This is not trained yet":
-            selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
-            st.session_state['selected_language'] = selected_language
-
-            if st.session_state['selected_language'] == 'Malayalam':
-                display_remedies_malayalam(st.session_state['pred'])
-            else:
-                display_remedies(st.session_state['pred'])
+    if st.session_state.session_state['pred'] is not None:
+      st.markdown(f"<p style='color: red;'>Prediction: {st.session_state.session_state['pred']}</p>", unsafe_allow_html=True)
+      st.markdown(f"<p style='color: red;'>Probability: {st.session_state.session_state['probs']}</p>", unsafe_allow_html=True)
+    if st.session_state.session_state['pred'] is not None:
+      selected_language = st.selectbox("Select Language", ['English', 'Malayalam'], index=0, key="language_select")
+      st.session_state.session_state['selected_language'] = selected_language
+    if st.session_state.session_state['pred'] is not None:
+      if st.session_state.session_state['selected_language'] == 'Malayalam':
+         display_remedies_malayalam(st.session_state.session_state['pred'])
+      else:
+         display_remedies(st.session_state.session_state['pred'])
 
 if __name__ == "__main__":
     main()

@@ -247,7 +247,9 @@ def main():
         st.title('Dr.Leaf')
     add_bg_from_local("background app2a.jpg")
     # Navigation panel
-    nav_selection = st.sidebar.radio("Navigation", ["Home", "About", "Contact"])
+    st.sidebar.title("Dr.Leaf")
+    st.sidebar.image("logo.png")
+    nav_selection = st.sidebar.radio("", ["Home", "About", "Contact"])
 
     if nav_selection == "Home":
         home_page()
